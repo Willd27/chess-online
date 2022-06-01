@@ -1,16 +1,24 @@
 package Game;
 
+import Pieces.Pawn;
 import Pieces.Piece;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.*;
+import com.google.gson.*;
 
 import java.awt.*;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Board {
     private final int height;
     private final int width;
 
-    private List<Piece> allPiecesAlive = new ArrayList<>();
+    private final List<Piece> allPiecesAlive = new ArrayList<>();
 
     public Board(int height, int width) {
         this.height = height;
@@ -22,7 +30,39 @@ public class Board {
     }
 
     public void updateAllPiecesAlive(String strJSON) {
+        System.out.println("WIlliam");
 
+        Object obj = JSONValue.parse(strJSON);
+        System.out.println(obj);
+        JSONArray array = (JSONArray) obj;
+        System.out.println("----------JSONArray");
+
+
+        System.out.println(array);
+
+        allPiecesAlive.clear();
+//        System.out.println(allPiecesAlive);
+
+        for (int i = 0; i < array.size(); i++) {
+            JSONObject currPiece = (JSONObject) array.get(i);
+            System.out.println("Curr Piece = " + currPiece);
+            System.out.println((long) currPiece.get("x") + 5);
+            System.out.println(currPiece.get("y").getClass());
+
+            System.out.println(currPiece.get("color"));
+            System.out.println(ColorPiece.valueOf((String) currPiece.get("color")).getClass());
+
+
+            new Pawn(new Location((int) (long) currPiece.get("x"), (int) (long) currPiece.get("y")), ColorPiece.valueOf((String) currPiece.get("color")));
+        }
+
+//        allPiecesAlive.add(new Pawn(new Location(0,1), ColorPiece.Black));
+
+
+        System.out.println(allPiecesAlive);
+
+
+        UISingleton.getUi().updateUI();
     }
 
     public void removePiece(Piece piece) {
@@ -83,15 +123,13 @@ public class Board {
 
 
     public String boardToJSON() {
-        StringBuilder str = new StringBuilder("{");
-        for (int i = 0; i < allPiecesAlive.size(); i++) {
-            str.append("\"").append(i).append("\":");
-            str.append(allPiecesAlive.get(i).toJSON());
-            if (i != allPiecesAlive.size() - 1)
-                str.append(", ");
+        System.out.println("Board To Json Func");
+        JSONArray piecesToJson = new JSONArray();
+
+        for (Piece piece : allPiecesAlive) {
+            piecesToJson.add(piece.toJSON());
         }
-        str.append("}");
-        return str.toString();
+        return piecesToJson.toJSONString();
     }
 
     public int getHeight() {

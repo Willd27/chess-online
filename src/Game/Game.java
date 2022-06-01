@@ -3,25 +3,9 @@ package Game;
 import Multi.ClientEndpoint;
 import Pieces.*;
 
-import java.util.Scanner;
-
 public class Game {
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-
-        Game.setupBoard();
-        UI ui = UISingleton.getUi();
-
-        Player playerB = new Player(ColorPiece.Black);
-        Player playerW = new Player(ColorPiece.White);
-        playerW.setOpponent(playerB);
-        playerB.setOpponent(playerW);
-        System.out.println("Start tour");
-        playerW.startTurn();
-        ui.getContentPane().addMouseListener(playerW);
-        ui.getContentPane().addMouseListener(playerB);
-        System.out.println("Mouse added");
-
+//        Scanner sc = new Scanner(System.in);
         ClientEndpoint clientEndpoint = new ClientEndpoint();
 
         clientEndpoint.connectToServer();
@@ -58,6 +42,35 @@ public class Game {
     }
 
     public static void retrieveDataFromServer() {
+
+    }
+
+    public static void startGame(ColorPiece colorHostPlayer, ClientEndpoint client) {
+        Game.setupBoard();
+        UI ui = UISingleton.getUi();
+        Player playerW;
+        Player playerB;
+        System.out.println(BoardSingleton.getBoard().getAllPiecesAlive());
+
+
+        if (colorHostPlayer == ColorPiece.Black) {
+            playerB = new Player(ColorPiece.Black, true, client);
+            playerW = new Player(ColorPiece.White, false, null);
+            ui.getContentPane().addMouseListener(playerB);
+        } else {
+            playerB = new Player(ColorPiece.Black, false, client);
+            playerW = new Player(ColorPiece.White, true, client);
+            ui.getContentPane().addMouseListener(playerW);
+        }
+
+        playerW.setOpponent(playerB);
+        playerB.setOpponent(playerW);
+        System.out.println("Game starting! You control the " + colorHostPlayer.toString().toLowerCase() + " pieces");
+
+        System.out.println("Start tour");
+        playerW.startTurn();
+
+        System.out.println("Mouse added");
 
     }
 }

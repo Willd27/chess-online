@@ -3,6 +3,7 @@ package Pieces;
 import Game.BoardSingleton;
 import Game.ColorPiece;
 import Game.Location;
+import org.json.simple.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -84,11 +85,13 @@ public abstract class Piece {
                 '}';
     }
 
-    public String toJSON() {
-        return "{\"icon\": \"" + icon + "\""
-                + ", \"color\": \"" + color + "\"" +
-                ", \"location\": \"" + location + "\"" +
-                "}";
+    public JSONObject toJSON() {
+        JSONObject piece = new JSONObject();
+        piece.put("color", color.toString());
+        piece.put("x", location.getX());
+        piece.put("y", location.getY());
+
+        return piece;
     }
 
     public boolean isSelected() {

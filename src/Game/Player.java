@@ -1,5 +1,6 @@
 package Game;
 
+import Multi.ClientEndpoint;
 import Pieces.Piece;
 
 import java.awt.event.MouseAdapter;
@@ -13,12 +14,17 @@ public class Player extends MouseAdapter {
     private Piece selectedPiece;
     private boolean isPlaying;
     private Player opponent;
+    private boolean isHostPlayer;
+    private ClientEndpoint client;
 
-    public Player(ColorPiece color) {
+    public Player(ColorPiece color, boolean isHostPlayer, ClientEndpoint client) {
         this.color = color;
         piecesAlive = new ArrayList<>();
         isPlaying = false;
         opponent = null;
+        this.isHostPlayer = isHostPlayer;
+        this.client = client;
+
     }
 
     public boolean isPlaying() {
@@ -50,6 +56,7 @@ public class Player extends MouseAdapter {
                     piece.setSelected(false);
                 } else {
                     selectedPiece.movePieceTo(location);
+                    client.sendNewLocations();
                     selectedPiece.setSelected(false);
                     selectedPiece = null;
                     isPlaying = false;

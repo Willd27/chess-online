@@ -1,16 +1,16 @@
 package Multi;
 
 import Game.Board;
+import Game.ColorPiece;
 import Game.BoardSingleton;
-import Pieces.Piece;
+import Game.Game;
 import org.glassfish.tyrus.client.ClientManager;
 
 import javax.websocket.*;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 @javax.websocket.ClientEndpoint
 public class ClientEndpoint {
@@ -18,10 +18,11 @@ public class ClientEndpoint {
 
     @OnOpen
     public void onOpen(Session session) {
-        System.out.println ("--- Connected " + session.getId());
+        System.out.println("--- Connected " + session.getId());
         this.session = session;
         try {
-            session.getBasicRemote().sendText(BoardSingleton.getBoard().boardToJSON());
+            session.getBasicRemote().sendText("test connexion");
+//            session.getBasicRemote().sendText(BoardSingleton.getBoard().boardToJSON());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -29,15 +30,27 @@ public class ClientEndpoint {
 
     @OnMessage
     public String onMessage(String message, Session session) {
-        BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
-        try {
-            System.out.println ("--- Received " + message);
-            BoardSingleton.getBoard().updateAllPiecesAlive(message);
-            String userInput = bufferRead.readLine();
-            return userInput;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+//        BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("--- Received : " + message);
+
+        if (Objects.equals(message, "B")) {
+            Game.startGame(ColorPiece.Black, this);
+        } else if (Objects.equals(message, "W")) {
+            Game.startGame(ColorPiece.White, this);
+        } else if (Objects.equals(message, "session created")) {
+            System.out.println("Connexion established");
+        } else if (message.charAt(0) == '[') {
+            try {
+                BoardSingleton.getBoard().updateAllPiecesAlive(message);
+            } catch (Exception e) {
+                System.out.println("Can't update pieces");
+                return "NACK";
+            }
         }
+
+
+//            String userInput = bufferRead.readLine();
+        return "ACK";
     }
 
     @OnClose
@@ -46,12 +59,13 @@ public class ClientEndpoint {
         System.out.println("--- Closing because: " + closeReason);
     }
 
-    public void sendNewLocations(Piece piece){
+    public void sendNewLocations() {
         Board board = BoardSingleton.getBoard();
 
         try {
-            String strData = piece.toJSON();
+            String strData = board.boardToJSON();
             this.session.getBasicRemote().sendText(strData);
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -64,7 +78,8 @@ public class ClientEndpoint {
             URI uri = new URI("ws://localhost:8100");
             client.connectToServer(ClientEndpoint.class, uri);
             System.out.println("Connected to Server");
-            while (true) {}
+            while (true) {
+            }
         } catch (DeploymentException | URISyntaxException e) {
             e.printStackTrace();
             System.out.println("Connexion closed");
