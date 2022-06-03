@@ -33,9 +33,9 @@ public class ClientEndpoint {
 //        BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("--- Received : " + message);
 
-        if (Objects.equals(message, "B")) {
+        if (Objects.equals(message, "start B")) {
             Game.startGame(ColorPiece.Black, this);
-        } else if (Objects.equals(message, "W")) {
+        } else if (Objects.equals(message, "start W")) {
             Game.startGame(ColorPiece.White, this);
         } else if (Objects.equals(message, "session created")) {
             System.out.println("Connexion established");

@@ -1,17 +1,12 @@
 package Game;
 
-import Pieces.Pawn;
-import Pieces.Piece;
+import Pieces.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.json.simple.parser.*;
-import com.google.gson.*;
 
 import java.awt.*;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Board {
@@ -45,15 +40,19 @@ public class Board {
 
         for (int i = 0; i < array.size(); i++) {
             JSONObject currPiece = (JSONObject) array.get(i);
-            System.out.println("Curr Piece = " + currPiece);
-            System.out.println((long) currPiece.get("x") + 5);
-            System.out.println(currPiece.get("y").getClass());
+            Location location = new Location((int) (long) currPiece.get("x"), (int) (long) currPiece.get("y"));
+            ColorPiece colorPiece = ColorPiece.valueOf((String) currPiece.get("color"));
+            String className = currPiece.get("type").toString();
 
-            System.out.println(currPiece.get("color"));
-            System.out.println(ColorPiece.valueOf((String) currPiece.get("color")).getClass());
-
-
-            new Pawn(new Location((int) (long) currPiece.get("x"), (int) (long) currPiece.get("y")), ColorPiece.valueOf((String) currPiece.get("color")));
+            switch (className) {
+                case "King" -> new King(location, colorPiece);
+                case "Queen" -> new Queen(location, colorPiece);
+                case "Pawn" -> new Pawn(location, colorPiece);
+                case "Bishop" -> new Bishop(location, colorPiece);
+                case "Knight" -> new Knight(location, colorPiece);
+                case "Rook" -> new Rook(location, colorPiece);
+                default -> System.out.println(className + " isn't a Piece Class Name");
+            }
         }
 
 //        allPiecesAlive.add(new Pawn(new Location(0,1), ColorPiece.Black));
@@ -63,6 +62,8 @@ public class Board {
 
 
         UISingleton.getUi().updateUI();
+
+        Game.player.startTurn();
     }
 
     public void removePiece(Piece piece) {

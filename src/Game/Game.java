@@ -4,6 +4,9 @@ import Multi.ClientEndpoint;
 import Pieces.*;
 
 public class Game {
+    static Player player;
+    static Player enemy;
+
     public static void main(String[] args) {
 //        Scanner sc = new Scanner(System.in);
         ClientEndpoint clientEndpoint = new ClientEndpoint();
@@ -48,27 +51,24 @@ public class Game {
     public static void startGame(ColorPiece colorHostPlayer, ClientEndpoint client) {
         Game.setupBoard();
         UI ui = UISingleton.getUi();
-        Player playerW;
-        Player playerB;
         System.out.println(BoardSingleton.getBoard().getAllPiecesAlive());
 
+        player = new Player(colorHostPlayer, true, client);
 
         if (colorHostPlayer == ColorPiece.Black) {
-            playerB = new Player(ColorPiece.Black, true, client);
-            playerW = new Player(ColorPiece.White, false, null);
-            ui.getContentPane().addMouseListener(playerB);
+            enemy = new Player(ColorPiece.White, false, null);
         } else {
-            playerB = new Player(ColorPiece.Black, false, client);
-            playerW = new Player(ColorPiece.White, true, client);
-            ui.getContentPane().addMouseListener(playerW);
+            enemy = new Player(ColorPiece.Black, false, null);
         }
 
-        playerW.setOpponent(playerB);
-        playerB.setOpponent(playerW);
+        ui.getContentPane().addMouseListener(player);
+
+        player.setOpponent(enemy);
+        enemy.setOpponent(player);
         System.out.println("Game starting! You control the " + colorHostPlayer.toString().toLowerCase() + " pieces");
 
         System.out.println("Start tour");
-        playerW.startTurn();
+        player.startTurn();
 
         System.out.println("Mouse added");
 

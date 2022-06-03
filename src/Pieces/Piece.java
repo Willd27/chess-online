@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class Piece {
@@ -87,9 +88,12 @@ public abstract class Piece {
 
     public JSONObject toJSON() {
         JSONObject piece = new JSONObject();
+        String[] className = this.getClass().toString().split("\\.");
+
         piece.put("color", color.toString());
         piece.put("x", location.getX());
         piece.put("y", location.getY());
+        piece.put("type", className[className.length-1]);
 
         return piece;
     }
